@@ -1,0 +1,598 @@
+<template>
+    <!-- <template if:true={isWelcomeScreen}>
+        <div class="sign_up_sec">
+            <div class="signUp">
+                <div class="slds-grid slds-wrap">
+                    <div
+                        class="slds-col slds-large-size_12-of-12 slds-medium-size_12-of-12 slds-size_12-of-12 slds-p-horizontal_medium slds-p-vertical_x-small">
+                        <div>
+                            <h2 class="title primaryContent">Welcome!</h2>
+                            <div class="subtitle secondaryContent">Please enter your email address</div>
+                        </div>
+                    </div>
+                    <div
+                        class="slds-col slds-large-size_12-of-12 slds-medium-size_12-of-12 slds-size_12-of-12 slds-p-horizontal_medium slds-p-vertical_x-small">
+                        <lightning-input type="text" label="Email" name="email" value={verifyEmail}
+                            onchange={handleChange} onblur={validateEmail}></lightning-input>
+                        <template if:true={isErrorMsg}>
+                            <label style="color: red">Please Enter Valid Email Id!</label>
+                        </template>
+                    </div>
+                    <div
+                        class="slds-col slds-large-size_12-of-12 slds-medium-size_12-of-12 slds-size_12-of-12 slds-p-horizontal_medium slds-p-vertical_x-small">
+                        <div class="confirmbtn2">
+                            <button onclick={handleVerifyEmail} class="confirmButton2">Confirm My Email</button>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="power_by_logo"><img src={powerByLogo}></div>
+            </div>
+
+        </div>
+    </template> -->
+    <!-- <div class="slds-p-around_medium"> -->
+            <template if:true={isPath}>
+            <div class="slds-path" style="margin-bottom: 10px;">
+                        <div class="slds-grid slds-path__track">
+                            <div class="slds-grid slds-path__scroller-container">
+                                <div class="slds-path__scroller">
+                                    <div class="slds-path__scroller_inner">
+                                        <ul class="slds-path__nav" role="listbox" aria-orientation="horizontal"
+                                            aria-labelledby="slds-path__stage-name">
+        
+                                            <template for:each={renderedStages} for:item="stage" for:index="index">
+                                                <li key={stage.name} class={stage.className} data-value={stage.name}
+                                                    role="presentation" id={index}>
+                                                    <a class="slds-path__link" href="#" role="option" tabindex={stage.tabIndex}
+                                                        aria-selected={stage.selected} id={index} data-stage={stage.name}>
+                                                        <span class="slds-path__title">{stage.name}</span>
+                                                    </a>
+                                                </li>
+                                            </template>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+
+            <!-- Step 1: Applicant Details -->
+            <template if:true={isSubmit}>
+                <div class="slds-m-top_medium">
+                    <div class="slds-clearfix slds-m-bottom_medium">
+                        <div class="slds-float_right">
+                            <lightning-button label="Add Co-Applicant" icon-name="utility:add"
+                                onclick={handleAddApplicant} variant="brand">
+                            </lightning-button>
+                        </div>
+                    </div>
+
+                    <lightning-accordion allow-multiple-sections-open active-section-name={activeSections}>
+                        <template for:each={applicants} for:item="applicant" for:index="index">
+                            <lightning-accordion-section key={applicant.id} name={applicant.id} label={applicant.label}>
+                                <div slot="actions">
+                                    <template if:false={applicant.isPrimary}>
+                                        <lightning-button-icon icon-name="utility:delete" alternative-text="Remove"
+                                            title="Remove Applicant" onclick={handleRemoveApplicant}
+                                            data-id={applicant.id} variant="bare">
+                                        </lightning-button-icon>
+                                    </template>
+                                </div>
+
+                                <div class="slds-grid slds-gutters">
+                                    <div class="slds-col slds-size_1-of-3">
+                                        <template if:true={showSpinner}>
+                                            <lightning-spinner alternative-text="Processing..."
+                                                size="medium"></lightning-spinner>
+                                        </template>
+
+                                        <!-- Aadhar Card Upload Section -->
+                                        <div class="custom-card">
+                                            <h2 class="section-title">Upload Aadhar Card</h2>
+
+                                            <div class="upload-section">
+                                                <lightning-file-upload label="Front Side" name="Front Aadhar Card"
+                                                    accept=".png,.jpg,.jpeg,.pdf" data-id={applicant.id} record-id={recordId}
+                                                    onuploadfinished={handleFrontAdharUpload}>
+                                                </lightning-file-upload>
+
+                                                <lightning-file-upload label="Back Side" name="Back Aadhar Card"
+                                                    accept=".png,.jpg,.jpeg,.pdf" data-id={applicant.id} record-id={recordId}
+                                                    onuploadfinished={handleBackAdharUpload}>
+                                                </lightning-file-upload>
+
+                                                <!-- <lightning-spinner if:true={isAadhaarFullNameLoading}
+                                                    alternative-text="Verifying..." size="medium"></lightning-spinner>
+                                                <div class="slds-m-top_medium">
+                                                    <template if:true={aadhaarFullName}>
+                                                        <p class="slds-text-heading_small">
+                                                            ✅ Aadhaar Verified: {aadhaarFullName}
+                                                        </p>
+                                                    </template>
+                                                    <template if:false={aadhaarFullName}>
+                                                        <lightning-button class="slds-m-top_medium" variant="brand"
+                                                            label="Verify With DiGi-Locker" onclick={handleInit}>
+                                                        </lightning-button>
+                                                    </template>
+                                                </div> -->
+                                            </div>
+                                        </div>
+
+                                        <!-- PAN Card Upload Section -->
+                                        <div class="custom-card">
+                                            <h2 class="section-title">Upload PAN Card</h2>
+
+                                            <div class="upload-section">
+                                                <lightning-file-upload label="PAN Card" name="PanCard"
+                                                    accept=".png,.jpg,.jpeg,.pdf" data-id={applicant.id} record-id={recordId}
+                                                    onuploadfinished={handlePanUpload}>
+                                                </lightning-file-upload>
+                                            </div>
+                                        </div>
+
+                                        <!-- <div class="custom-card">
+                                            <h2 class="section-title">Upload Document</h2>
+
+                                            <lightning-combobox name="priDocType" label="Type" value={priDocType}
+                                                placeholder="Select Type" options={optionsDocType}
+                                                onchange={handleChange} required>
+                                            </lightning-combobox>
+
+                                            <template if:true={isPriDocUpload}>
+                                                <div class="upload-section">
+                                                    <lightning-file-upload label="Select Document" name="uploadDocument"
+                                                        accept=".jpg,.jpeg,.png,.pdf"
+                                                        onuploadfinished={handleUploadDocument}>
+                                                    </lightning-file-upload>
+                                                </div>
+                                            </template>
+
+                                            <template if:true={priData}>
+                                                <lightning-datatable key-field="Id" data={priData} columns={columns}
+                                                    hide-checkbox-column>
+                                                </lightning-datatable>
+                                            </template>
+                                        </div> -->
+                                    </div>
+                                    <div class="slds-col slds-size_2-of-3">
+                                        <div class="slds-box slds-m-top_medium">
+
+                                            <!-- <lightning-progress-indicator current-step={currentStep} type="path" variant="base">
+                                    <lightning-progress-step label="Applicant Details" value="1"></lightning-progress-step>
+                                    <lightning-progress-step label="Contact & Professional" value="2"></lightning-progress-step>
+                                </lightning-progress-indicator> -->
+
+                                            <div class="slds-grid slds-wrap slds-gutters">
+                                                <div class="slds-col slds-size_3-of-12">
+                                                    <lightning-combobox label="Title" value={applicant.title}
+                                                        options={titleOptions} data-field="title" data-id={applicant.id}
+                                                        onchange={handleApplicantChange}>
+                                                    </lightning-combobox>
+                                                </div>
+
+                                                <div class="slds-col slds-size_3-of-12">
+                                                    <lightning-input label="First Name" value={applicant.firstName}
+                                                        data-field="firstName" data-id={applicant.id}
+                                                        onchange={handleApplicantChange} required>
+                                                    </lightning-input>
+                                                </div>
+
+                                                <div class="slds-col slds-size_3-of-12">
+                                                    <lightning-input label="Middle Name" value={applicant.middleName}
+                                                        data-field="middleName" data-id={applicant.id}
+                                                        onchange={handleApplicantChange}>
+                                                    </lightning-input>
+                                                </div>
+
+                                                <div class="slds-col slds-size_3-of-12">
+                                                    <lightning-input label="Last Name" value={applicant.lastName}
+                                                        data-field="lastName" data-id={applicant.id}
+                                                        onchange={handleApplicantChange} required>
+                                                    </lightning-input>
+                                                </div>
+
+                                                <div class="slds-col slds-size_4-of-12">
+                                                    <lightning-input type="date" label="Date of Birth"
+                                                        value={applicant.dateOfBirth} data-field="dateOfBirth"
+                                                        data-id={applicant.id} onchange={handleApplicantChange}
+                                                        >
+                                                    </lightning-input>
+                                                </div>
+
+                                                <div class="slds-col slds-size_4-of-12">
+                                                    <lightning-combobox label="Gender" value={applicant.gender}
+                                                        options={genderOptions} data-field="gender"
+                                                        data-id={applicant.id} onchange={handleApplicantChange}
+                                                        >
+                                                    </lightning-combobox>
+                                                </div>
+
+                                                <div class="slds-col slds-size_4-of-12">
+                                                    <lightning-combobox label="Marital Status"
+                                                        value={applicant.maritalStatus} options={maritalOptions}
+                                                        data-field="maritalStatus" data-id={applicant.id}
+                                                        onchange={handleApplicantChange} >
+                                                    </lightning-combobox>
+                                                </div>
+
+                                                <div class="slds-col slds-size_4-of-12">
+                                                    <lightning-combobox label="Entity Status"
+                                                        value={applicant.entityStatus} options={entityOptions}
+                                                        data-field="entityStatus" data-id={applicant.id}
+                                                        onchange={handleApplicantChange} >
+                                                    </lightning-combobox>
+                                                </div>
+
+                                                <div class="slds-col slds-size_4-of-12">
+                                                    <lightning-input label="AADHAR Number" value={applicant.aadhar}
+                                                        data-field="aadhar" data-id={applicant.id}
+                                                        onchange={handleApplicantChange} pattern="[0-9]{12}"
+                                                        maxlength="12"
+                                                        message-when-pattern-mismatch="AADHAR must be 12 digits"
+                                                        >
+                                                    </lightning-input>
+                                                </div>
+
+                                                <div class="slds-col slds-size_4-of-12">
+                                                    <lightning-input label="PAN Number" value={applicant.pan}
+                                                        data-field="pan" data-id={applicant.id}
+                                                        onchange={handleApplicantChange}
+                                                        pattern="[A-Z]{5}[0-9]{4}[A-Z]{1}" maxlength="10"
+                                                        message-when-pattern-mismatch="PAN format: ABCDE1234F" >
+                                                    </lightning-input>
+                                                </div>
+
+                                                <div class="slds-col slds-size_4-of-12">
+                                                    <lightning-combobox label="Relation Type"
+                                                        value={applicant.relationType} options={relationOptions}
+                                                        data-field="relationType" data-id={applicant.id}
+                                                        onchange={handleApplicantChange} >
+                                                    </lightning-combobox>
+                                                </div>
+
+                                                <div class="slds-col slds-size_4-of-12">
+                                                    <lightning-input label="Relation Name"
+                                                        value={applicant.relationName} data-field="relationName"
+                                                        data-id={applicant.id} onchange={handleApplicantChange}
+                                                        >
+                                                    </lightning-input>
+                                                </div>
+
+                                                <div class="slds-col slds-size_4-of-12">
+                                                    <lightning-input label="Spouse Name" value={applicant.spouseName}
+                                                        data-field="spouseName" data-id={applicant.id}
+                                                        onchange={handleApplicantChange}>
+                                                    </lightning-input>
+                                                </div>
+
+                                                <div class="slds-col slds-size_4-of-12">
+                                                    <lightning-input type="date" label="Spouse Date of Birth"
+                                                        value={applicant.spouseDob} data-field="spouseDob"
+                                                        data-id={applicant.id} onchange={handleApplicantChange}>
+                                                    </lightning-input>
+                                                </div>
+
+                                                <div class="slds-col slds-size_4-of-12">
+                                                    <lightning-input type="date" label="Anniversary Date"
+                                                        value={applicant.anniversaryDate} data-field="anniversaryDate"
+                                                        data-id={applicant.id} onchange={handleApplicantChange}>
+                                                    </lightning-input>
+                                                </div>
+                                            </div>
+
+                                            <h2 class="slds-text-heading_medium slds-m-top_large slds-m-bottom_medium">
+                                                Contact Details</h2>
+
+                                            <div class="slds-grid slds-wrap slds-gutters">
+                                                <div class="slds-col slds-size_1-of-3">
+                                                    <lightning-input label="Country Code"
+                                                        value={applicant.mobileCountryCode}
+                                                        data-field="mobileCountryCode" onchange={handleInputChange}
+                                                        >
+                                                    </lightning-input>
+                                                </div>
+
+                                                <div class="slds-col slds-size_1-of-3">
+                                                    <lightning-input type="tel" label="Mobile Number"
+                                                        value={applicant.mobileNumber} data-field="mobileNumber"
+                                                        onchange={handleInputChange} pattern="[0-9]{10}" maxlength="10" data-id={applicant.id}
+                                                        message-when-pattern-mismatch="Mobile number must be 10 digits"
+                                                        >
+                                                    </lightning-input>
+                                                </div>
+
+                                                <div class="slds-col slds-size_1-of-3">
+                                                    <lightning-input type="email" label="Email" value={applicant.email} data-id={applicant.id}
+                                                        data-field="email" onchange={handleInputChange} >
+                                                    </lightning-input>
+                                                </div>
+                                            </div>
+
+                                            <h2 class="slds-text-heading_medium slds-m-top_large slds-m-bottom_medium">
+                                                Professional Details</h2>
+
+                                            <div class="slds-grid slds-wrap slds-gutters">
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <lightning-input label="Designation" value={applicant.designation} data-id={applicant.id}
+                                                        data-field="designation" onchange={handleInputChange}>
+                                                    </lightning-input>
+                                                </div>
+
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <lightning-input label="Organization Name"
+                                                        value={applicant.organizationName} data-field="organizationName" data-id={applicant.id}
+                                                        onchange={handleInputChange}>
+                                                    </lightning-input>
+                                                </div>
+
+                                                <div class="slds-col slds-size_1-of-1">
+                                                    <lightning-textarea label="Organization Address"
+                                                        value={applicant.organizationAddress} data-id={applicant.id}
+                                                        data-field="organizationAddress" onchange={handleInputChange}>
+                                                    </lightning-textarea>
+                                                </div>
+
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <lightning-combobox label="Organization Type"
+                                                        value={applicant.organizationType} data-id={applicant.id}
+                                                        options={organizationTypeOptions} data-field="organizationType"
+                                                        onchange={handleInputChange}>
+                                                    </lightning-combobox>
+                                                </div>
+
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <lightning-combobox label="Industry Sector" data-id={applicant.id}
+                                                        value={applicant.industrySector} options={industrySectorOptions}
+                                                        data-field="industrySector" onchange={handleInputChange}>
+                                                    </lightning-combobox>
+                                                </div>
+
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <lightning-combobox label="Work Experience"
+                                                        value={applicant.workExperience} options={workExpOptions} data-id={applicant.id}
+                                                        data-field="workExperience" onchange={handleInputChange}>
+                                                    </lightning-combobox>
+                                                </div>
+
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <lightning-combobox label="Annual Household Income (Lakhs)"
+                                                        value={applicant.annualIncome} options={incomeOptions} data-id={applicant.id}
+                                                        data-field="annualIncome" onchange={handleInputChange}>
+                                                    </lightning-combobox>
+                                                </div>
+
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <lightning-input label="City" value={applicant.city} data-id={applicant.id}
+                                                        data-field="city" onchange={handleInputChange}>
+                                                    </lightning-input>
+                                                </div>
+
+                                                <div class="slds-col slds-size_1-of-2">
+                                                     <lightning-combobox
+                                                        label="State"
+                                                        value={applicant.state}
+                                                        data-id={applicant.id}
+                                                        data-field="state"
+                                                        options={stateOptions}
+                                                        onchange={handleInputChange}>
+                                                    </lightning-combobox> 
+                                                    <!-- <lightning-input label="State" value={applicant.state} data-id={applicant.id}
+                                                        data-field="state" onchange={handleInputChange} required>
+                                                    </lightning-input> -->
+                                                </div>
+
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <lightning-input label="Pincode" value={applicant.pincode}
+                                                        data-field="pincode" onchange={handleInputChange} data-id={applicant.id}
+                                                        pattern="[0-9]{6}" maxlength="6"
+                                                        message-when-pattern-mismatch="Pincode must be 6 digits">
+                                                    </lightning-input>
+                                                </div>
+
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <lightning-combobox
+                                                        label="Country"
+                                                        data-id={applicant.id}
+                                                        value={applicant.country}
+                                                        data-field="country"
+                                                        options={countryOptions}
+                                                        onchange={handleInputChange}>
+                                                    </lightning-combobox>
+                                                    <!-- <lightning-input label="Country" value={applicant.country}
+                                                        data-field="country" onchange={handleInputChange}>
+                                                    </lightning-input> -->
+                                                </div>
+                                            </div>
+
+                                            <h2 class="slds-text-heading_medium slds-m-top_large slds-m-bottom_medium">
+                                                Resident Status</h2>
+
+                                            <div class="slds-grid slds-wrap slds-gutters">
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <lightning-combobox label="Resident Status"
+                                                        value={applicant.residentStatus} options={residentStatusOptions} data-id={applicant.id}
+                                                        data-field="residentStatus" onchange={handleInputChange}
+                                                        >
+                                                    </lightning-combobox>
+                                                </div>
+
+                                                <template if:true={showNRIFields}>
+                                                    <div class="slds-col slds-size_1-of-2">
+                                                        <lightning-input label="Country of Residence"
+                                                            value={applicant.countryOfResidence} data-id={applicant.id}
+                                                            data-field="countryOfResidence"
+                                                            onchange={handleInputChange}>
+                                                        </lightning-input>
+                                                    </div>
+                                                </template>
+
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <lightning-combobox label="Current Resident Status"
+                                                        value={applicant.currentResidentStatus} data-id={applicant.id}
+                                                        options={currentResidentStatusOptions}
+                                                        data-field="currentResidentStatus" onchange={handleInputChange}>
+                                                    </lightning-combobox>
+                                                </div>
+
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <lightning-combobox label="Current Resident Type"
+                                                        value={applicant.currentResidentType} data-id={applicant.id}
+                                                        options={currentResidentTypeOptions}
+                                                        data-field="currentResidentType" onchange={handleInputChange}>
+                                                    </lightning-combobox>
+                                                </div>
+                                            </div>
+
+                                            <h2 class="slds-text-heading_medium slds-m-top_large slds-m-bottom_medium">
+                                                Address for Correspondence</h2>
+
+                                            <div class="slds-grid slds-wrap slds-gutters">
+                                                <div class="slds-col slds-size_1-of-1">
+                                                    <lightning-textarea label="Address" value={addressData.corrAddress}
+                                                        data-field="corrAddress" onchange={handleInputChange}>
+                                                    </lightning-textarea>
+                                                </div>
+
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <lightning-input label="City" value={addressData.corrCity}
+                                                        data-field="corrCity" onchange={handleInputChange}>
+                                                    </lightning-input>
+                                                </div>
+
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <lightning-combobox
+                                                        label="State"
+                                                        value={addressData.corrState}
+                                                        data-field="corrState"
+                                                        options={stateOptions}
+                                                        onchange={handleInputChange}>
+                                                    </lightning-combobox> 
+                                                    <!-- <lightning-input label="State" value={addressData.corrState}
+                                                        data-field="corrState" onchange={handleInputChange} required>
+                                                    </lightning-input> -->
+                                                </div>
+
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <lightning-input label="Pincode" value={addressData.corrPincode}
+                                                        data-field="corrPincode" onchange={handleInputChange}
+                                                        pattern="[0-9]{6}" maxlength="6"
+                                                        message-when-pattern-mismatch="Pincode must be 6 digits"
+                                                        >
+                                                    </lightning-input>
+                                                </div>
+
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <lightning-combobox
+                                                        label="Country"
+                                                        data-id={applicant.id}
+                                                        value={addressData.corrCountry}
+                                                        data-field="corrCountry"
+                                                        options={countryOptions}
+                                                        onchange={handleInputChange}>
+                                                    </lightning-combobox>
+                                                    <!-- <lightning-input label="Country" value={addressData.corrCountry}
+                                                        data-field="corrCountry" onchange={handleInputChange} required>
+                                                    </lightning-input> -->
+                                                </div>
+                                            </div>
+
+                                            <h2 class="slds-text-heading_medium slds-m-top_large slds-m-bottom_medium">
+                                                Permanent Address</h2>
+
+                                            <div class="slds-grid slds-wrap slds-gutters">
+                                                <div class="slds-col slds-size_1-of-1">
+                                                    <lightning-input type="checkbox"
+                                                        label="Same as Correspondence Address"
+                                                        checked={addressData.sameAsPermanent} data-field="sameAsPermanent"
+                                                        onchange={handleInputChange}>
+                                                    </lightning-input>
+                                                </div>
+
+                                                <div class="slds-col slds-size_1-of-1">
+                                                    <lightning-textarea label="Address" value={addressData.permAddress}
+                                                        data-field="permAddress" onchange={handleInputChange}
+                                                        disabled={addressData.sameAsPermanent}>
+                                                    </lightning-textarea>
+                                                </div>
+
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <lightning-input label="City" value={addressData.permCity}
+                                                        data-field="permCity" onchange={handleInputChange}
+                                                        disabled={addressData.sameAsPermanent}>
+                                                    </lightning-input>
+                                                </div>
+
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <lightning-combobox
+                                                        label="State"
+                                                        value={addressData.permState}
+                                                        data-id={applicant.id}
+                                                        data-field="permState"
+                                                        options={stateOptions}
+                                                        onchange={handleInputChange}
+                                                        disabled={addressData.sameAsPermanent}>
+                                                    </lightning-combobox> 
+                                                    <!-- <lightning-input label="State" value={addressData.permState}
+                                                        data-field="permState" onchange={handleInputChange}
+                                                        disabled={addressData.sameAsPermanent} required>
+                                                    </lightning-input> -->
+                                                </div>
+
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <lightning-input label="Pincode" value={addressData.permPincode}
+                                                        data-field="permPincode" onchange={handleInputChange}
+                                                        pattern="[0-9]{6}" maxlength="6"
+                                                        message-when-pattern-mismatch="Pincode must be 6 digits"
+                                                        disabled={addressData.sameAsPermanent}>
+                                                    </lightning-input>
+                                                </div>
+
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <lightning-combobox
+                                                        label="Country"
+                                                        data-id={applicant.id}
+                                                        value={addressData.permCountry}
+                                                        data-field="permCountry"
+                                                        options={countryOptions}
+                                                        onchange={handleInputChange}
+                                                        disabled={addressData.sameAsPermanent}>
+                                                    </lightning-combobox>
+                                                    <!-- <lightning-input label="Country" value={addressData.permCountry}
+                                                        data-field="permCountry" onchange={handleInputChange}
+                                                        disabled={addressData.sameAsPermanent} required>
+                                                    </lightning-input> -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </lightning-accordion-section>
+                        </template>
+                    </lightning-accordion>
+                </div>
+                <div class="slds-m-top_large slds-text-align_center slds-grid slds-grid_align-center slds-grid_vertical-align-center">
+                    <lightning-button variant="brand" label="Save" onclick={handleSave} class="slds-m-right_small"></lightning-button>                              
+                    <lightning-button label="Save and Preview" onclick={handleSaveAndPreview} class="slds-m-left_small">
+                    </lightning-button>
+                </div>
+            </template>
+
+            <template if:true={showSpinner}>
+                <lightning-spinner alternative-text="Processing..."
+                    size="medium"></lightning-spinner>
+            </template>
+
+            
+            
+            <template if:true={isThanks}>
+                <div style="place-self: center;">
+                    <img src={thankYouImage}>
+                </div>
+            </template>
+
+        <!-- </div> -->
+
+</template>

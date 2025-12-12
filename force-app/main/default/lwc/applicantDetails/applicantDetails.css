@@ -1,0 +1,130 @@
+/* ========= WRAPPER SECTION ========= */
+.sign_up_sec {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 70px);
+    background-color: #FAF7F5;
+}
+
+/* ========= CARD ========= */
+.signUp {
+    width: 100%;
+    max-width: 560px;
+    padding: 40px 25px;
+    background-color: #ffffff;
+    border-radius: 25px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
+
+/* ========= TEXT STYLING ========= */
+.title {
+    line-height: 40px;
+    font-size: 40px;
+    font-weight: 600;
+    color: #0C101F;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #B2B4C3;
+    font-size: 16px;
+}
+
+/* ========= EMAIL INPUT ========= */
+lightning-input .slds-form-element {
+    margin-bottom: 1rem;
+}
+
+lightning-input:focus-within {
+    --slds-c-input-shadow: 0 0 0 2px #1589ee;
+    --slds-c-input-color-border: #1589ee;
+}
+
+/* ========= ERROR MESSAGE ========= */
+.slds-text-color_error,
+.is-error-text {
+    color: red;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* ========= CONFIRM BUTTON ========= */
+.confirmbtn2 {
+    display: flex;
+    justify-content: center;
+}
+
+.confirmButton2 {
+    border-radius: 8px;
+    background-color: #1A98D5;
+    padding: 15px 0px;
+    width: 100%;
+    max-width: 200px;
+    border: 0;
+    color: white;
+    margin-top: 20px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: 0.3s ease;
+}
+
+.confirmButton2:hover {
+    background-color: #147EB8;
+}
+
+.confirmButton2:active {
+    background-color: #106A99;
+}
+
+.confirmButton2[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ========= POWERED BY LOGO ========= */
+.power_by_logo {
+    text-align: center;
+    margin-top: 25px;
+}
+
+.power_by_logo img {
+    width: 100%;
+    max-width: 100px;
+}
+
+/* ========= MOBILE RESPONSIVE ========= */
+@media (max-width: 600px) {
+    .signUp {
+        padding: 25px 15px;
+    }
+
+    .title {
+        font-size: 32px;
+        line-height: 35px;
+    }
+
+    .subtitle {
+        font-size: 14px;
+    }
+}
+
+.two-column {
+    display: flex;
+    gap: 20px;          /* spacing between columns */
+}
+
+.left {
+    width: 70%;        /* iframe takes 50% width */
+}
+
+.right {
+    width: 30%;             /* signature blocks take other 50% */
+    overflow-y: auto;   /* scroll if many applicants */
+    max-height: 600px;
+}
+
+/* c-signature-capture {
+    display: block;
+    margin-bottom: 20px;
+} */
