@@ -320,11 +320,11 @@ export default class ApplicantDetails extends LightningElement {
 
     handleMessage(event) {
         try {
-            if (!event.data || event.data.source !== 'CHATBOT_LWC' || event.data.type !== 'APPLICANT_DATA') {
+            if (!event.data || event.data.source !== 'CHATBOT_LWC' || event.data.type !== 'APPLICANT_DATA' || event.data.validData !== 'true') {
                 return;
             }
 
-            if (event.data.data.validData === 'true') {
+            if (event.data.validData === 'true') {
                 console.log('ApplicantDetails: Message received Data', JSON.stringify(event.data.data));
                 console.log('ApplicantDetails: Message received type', JSON.stringify(event.data.type));
                 console.log('ApplicantDetails: Message received source', JSON.stringify(event.data.source));
@@ -341,10 +341,34 @@ export default class ApplicantDetails extends LightningElement {
     }
 
     updateFormValues() {
-        for (let key in this.dataFromChatbot) {
-            this.applicants[0][key] = this.dataFromChatbot[key];
-            console.log("Key:", key, "Value:", this.dataFromChatbot[key]);
+        if (!Array.isArray(this.dataFromChatbot) || !this.dataFromChatbot.length) {
+            return;
         }
+
+        this.dataFromChatbot.forEach((payload, index) => {
+            if (!this.applicants[index]) {
+                this.handleAddApplicant();
+            }
+
+            const applicant = this.applicants[index];
+
+            const flattenedData = {
+                ...(payload.generalDetails || {}),
+                ...(payload.contactDetails || {}),
+                ...(payload.professionalDetails || {}),
+                ...(payload.residentStatus || {}),
+                ...(payload.addressForCorrespondence || {}),
+                ...(payload.permanentAddress || {})
+            };
+
+            Object.keys(flattenedData).forEach(key => {
+                if (key in applicant) {
+                    applicant[key] = flattenedData[key];
+                }
+            });
+        })
+
+        this.applicants = [...this.applicants];
     }
 
     getEmail(bookingId) {

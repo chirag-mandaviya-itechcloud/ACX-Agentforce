@@ -110,10 +110,9 @@ export default class CustomTextMessageBubble extends LightningElement {
                 console.error('chatBot : Error parsing JSON:', e);
                 jsonObj = {};
             };
-            jsonObj.validData = 'true';
             console.log('chatBot : Original Message String : ', jsonObj);
             console.log('chatBot : Parsed JSON Object : ', JSON.stringify(jsonObj));
-            this.publishApplicantData(jsonObj);
+            this.publishApplicantData(jsonObj, 'true');
             this.chatBotMessageVisible = true;
             this.chatBotMessage = 'Updating applicant data...';
         }
@@ -143,14 +142,15 @@ export default class CustomTextMessageBubble extends LightningElement {
     /**
      * Publish applicant data via Lightning Message Service
      */
-    publishApplicantData(data) {
+    publishApplicantData(data, validData) {
         console.log("chatBot : Publishing applicant data:", JSON.stringify(data));
 
         window.parent.postMessage(
             {
                 source: 'CHATBOT_LWC',
                 type: 'APPLICANT_DATA',
-                data: data
+                data: data,
+                validData: validData,
             },
             '*'
         );
