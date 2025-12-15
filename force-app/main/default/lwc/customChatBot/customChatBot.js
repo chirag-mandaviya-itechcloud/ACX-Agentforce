@@ -1,4 +1,5 @@
 import { api, LightningElement, track } from "lwc";
+
 const MESSAGE_CONTENT_CLASS = "embedded-messaging-message-content";
 const ENDUSER = "EndUser";
 const AGENT = "Agent";
@@ -6,15 +7,10 @@ const CHATBOT = "Chatbot";
 const PARTICIPANT_TYPES = [ENDUSER, AGENT, CHATBOT];
 const CHAT_CONTENT_CLASS = 'chat-content';
 
-
 export default class CustomTextMessageBubble extends LightningElement {
     @track strMessage = '';
-
-    //Add a var to track visibility for the component
-    @track isBaseTextVisible = false;
-    @track loadLWC = false;
-    @track loadCaseLWC = false;
-    messageStyle;
+    chatBotMessageVisible = false;
+    chatBotMessage = '';
 
     /**
      * Deployment configuration data.
@@ -82,7 +78,7 @@ export default class CustomTextMessageBubble extends LightningElement {
         if (this.isSupportedSender()) {
             return `${MESSAGE_CONTENT_CLASS} ${this.sender}`;
         } else {
-            throw new Error(`Unsupported participant type passed in: ${this.sender}`);
+            throw new Error(`chatBot : Unsupported participant type passed in: ${this.sender}`);
         }
     }
 
@@ -96,60 +92,68 @@ export default class CustomTextMessageBubble extends LightningElement {
         );
     }
 
-
-
     connectedCallback() {
-        //Set message string
+        this.chatBotMessageVisible = false;
         this.strMessage = this.textContent;
-        console.log('straMessage', this.strMessage);
-        //if (this.isSupportedUserType(this.userType))
-        {
-            //if using a lwc, remove any emojis that may have been inserted by the bot (ie :D or :p )
-            if (this.sender == 'Chatbot' && this.strMessage.startsWith('lwc')) {
-                this.strMessage = this.strMessage.replace(/😀/g, ':D').replace(/😛/g, ':p');
-            }
+        console.log('chatBot : strMessage', this.strMessage);
+        console.log('chatBot : strMessage', this.strMessage[1]);
+        console.log('chatBot : sender : ', this.sender);
+        console.log('chatBot : sender : ', typeof this.sender);
 
-            if (this.sender == 'Chatbot' && this.strMessage.startsWith('lwc:lead')) {
-                this.loadLWC = true;
-            }
-            else if (this.sender == 'Chatbot' && this.strMessage.startsWith('lwc:case')) {
-                this.loadCaseLWC = true;
-            }
+        let jsonObj;
 
-            //Add an elseif to show ur component....
-
-
-            //ELSE SHOW BASE CHAT MESSAGE
-            else if (!this.strMessage.startsWith('lwc:hide')) {
-                console.log('Hide1111--');
-
-                this.isBaseTextVisible = true;
-                this.messageStyle = `${CHAT_CONTENT_CLASS} ${this.sender}`;
-                console.log('messageStyle--', this.messageStyle);
-
-            }
+        if (this.sender === "Chatbot" && this.strMessage.includes('```json')) {
+            console.log('chatBot : Processing Chatbot message for applicant data.');
+            try {
+                jsonObj = JSON.parse(this.strMessage.replace(/```json|```/g, '').trim());
+            } catch (e) {
+                console.error('chatBot : Error parsing JSON:', e);
+                jsonObj = {};
+            };
+            jsonObj.validData = 'true';
+            console.log('chatBot : Original Message String : ', jsonObj);
+            console.log('chatBot : Parsed JSON Object : ', JSON.stringify(jsonObj));
+            this.publishApplicantData(jsonObj);
+            this.chatBotMessageVisible = true;
+            this.chatBotMessage = 'Updating applicant data...';
         }
     }
 
+    /**
+     * Parse key-value pairs from string
+     * Format: "key1=value1,key2=value2"
+     */
+    parseKeyValuePairs(dataString) {
+        console.log('chatBot : Parsing data string:', dataString);
+        const data = {};
+        const pairs = dataString.split(',');
 
-    handlePostMessage(event) {
-        const dateValue = event.detail;
-        console.log('Handling Event with value: ' + dateValue);
+        pairs.forEach(pair => {
+            const [key, value] = pair.split('=');
+            if (key && value) {
+                data[key.trim()] = value.trim();
+            }
+        });
 
-        // Get the embedded messaging instance
-        const embeddedservice_bootstrap = window.parent.embeddedservice_bootstrap;
+        console.log('chatBot : Parsed data:', JSON.stringify(data));
+        return data;
 
-        // Send a message
-        if (embeddedservice_bootstrap) {
-            embeddedservice_bootstrap.utilAPI.sendTextMessage(dateValue);
-        }
+    }
 
-        /*window.postMessage(
+    /**
+     * Publish applicant data via Lightning Message Service
+     */
+    publishApplicantData(data) {
+        console.log("chatBot : Publishing applicant data:", JSON.stringify(data));
+
+        window.parent.postMessage(
             {
-                message: dateValue,
-                type: "EndUser"
+                source: 'CHATBOT_LWC',
+                type: 'APPLICANT_DATA',
+                data: data
             },
-            window.parent.location ? window.parent.location.href : window.location.href
-        );*/
+            '*'
+        );
+
     }
 }

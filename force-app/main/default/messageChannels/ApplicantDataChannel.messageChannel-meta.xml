@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningMessageChannel xmlns="http://soap.sforce.com/2006/04/metadata">
+    <masterLabel>Applicant Data Channel</masterLabel>
+    <isExposed>true</isExposed>
+    <description>Channel to communicate applicant data between chatbot and form</description>
+    <lightningMessageFields>
+        <fieldName>applicantData</fieldName>
+        <description>Contains applicant form data</description>
+    </lightningMessageFields>
+    <lightningMessageFields>
+        <fieldName>action</fieldName>
+        <description>Action type: update, add, etc.</description>
+    </lightningMessageFields>
+</LightningMessageChannel>
