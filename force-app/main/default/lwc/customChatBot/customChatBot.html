@@ -1,9 +1,23 @@
 <template>
 
+    <template if:true={chatBotMessageVisible}>
+        <div class={messageStyle}>
+            {chatBotMessage}
+        </div>
+    </template>
+
+    <!-- Show normal chatbot / agent message -->
+    <template if:false={chatBotMessageVisible}>
+        <div class={messageStyle}>
+            <lightning-formatted-rich-text value={strMessage}>
+            </lightning-formatted-rich-text>
+        </div>
+    </template>
+
     <!-- <template if:true={isBaseTextVisible}> -->
-    <div class={messageStyle}>
+    <!-- <div class={messageStyle}>
         <lightning-formatted-rich-text value={strMessage}></lightning-formatted-rich-text>
-    </div>
+    </div> -->
     <!-- </template> -->
 
     <!-- ADD ADDITIONAL LWCs HERE -->
