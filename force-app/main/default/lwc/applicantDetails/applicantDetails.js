@@ -351,6 +351,7 @@ export default class ApplicantDetails extends LightningElement {
             }
 
             const applicant = this.applicants[index];
+            console.log("Applicant Details: ", JSON.parse(JSON.stringify(applicant)));
 
             const flattenedData = {
                 ...(payload.generalDetails || {}),
@@ -361,14 +362,33 @@ export default class ApplicantDetails extends LightningElement {
                 ...(payload.permanentAddress || {})
             };
 
+            console.log('Flattened Data from Chatbot:', JSON.stringify(flattenedData));
+
+            const addressFields = ["corrAddress", "corrCity", "corrState", "corrPincode", "corrCountry", "sameAsPermanent", "permAddress", "permCity", "permState", "permPincode", "permCountry"];
+
             Object.keys(flattenedData).forEach(key => {
-                if (key in applicant) {
+                if (addressFields.includes(key)) {
+                    if (key.toLowerCase().includes('state')) {
+                        this.addressData[key] = this.stateOptions.find(option => option.label === flattenedData[key])?.value || '';
+                    } else if (key.toLowerCase().includes('country')) {
+                        this.addressData[key] = this.countryOptions.find(option => option.label === flattenedData[key])?.value || '';
+                    } else {
+                        this.addressData[key] = flattenedData[key];
+                    }
+                } if (key.toLowerCase().includes('state')) {
+                    applicant['state'] = this.stateOptions.find(option => option.label === flattenedData[key])?.value || '';
+                } else if (key.toLowerCase().includes('country')) {
+                    applicant['country'] = this.countryOptions.find(option => option.label === flattenedData[key])?.value || '';
+                } else {
                     applicant[key] = flattenedData[key];
                 }
             });
         })
 
         this.applicants = [...this.applicants];
+        this.addressData = { ...this.addressData };
+
+        console.log("Updated applicants : ", JSON.parse(JSON.stringify(this.applicants)));
     }
 
     getEmail(bookingId) {
