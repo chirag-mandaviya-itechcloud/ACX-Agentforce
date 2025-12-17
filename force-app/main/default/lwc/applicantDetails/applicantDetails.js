@@ -23,7 +23,7 @@ export default class ApplicantDetails extends LightningElement {
     @track activeSections = [];
     @track isSaving = false;
     @track statusList = ['Submit Details', 'Verify Details'];
-    @track dataFromChatbot = {};
+
     applicantCounter = 0;
     recordTypeId;
     applicantFiles = {};
@@ -37,6 +37,9 @@ export default class ApplicantDetails extends LightningElement {
     otherDocIds = [];
     selectedDocType = '';
     verifyEmail;
+
+    // Added by Chirag
+    @track dataFromChatbot = {};
 
 
     @track addressData = {
@@ -308,8 +311,8 @@ export default class ApplicantDetails extends LightningElement {
         } else {
             this.addApplicant(true);
         }
-        console.log("ApplicantDetails: this is connectedCallback");
 
+        // Added by Chirag
         this.handleMessage = this.handleMessage.bind(this);
         window.addEventListener('message', this.handleMessage);
     }
@@ -318,6 +321,7 @@ export default class ApplicantDetails extends LightningElement {
         window.removeEventListener('message', this.handleMessage);
     }
 
+    // Added by Chirag
     handleMessage(event) {
         try {
             if (!event.data || event.data.source !== 'CHATBOT_LWC' || event.data.type !== 'APPLICANT_DATA' || event.data.validData !== 'true') {
@@ -325,13 +329,13 @@ export default class ApplicantDetails extends LightningElement {
             }
 
             if (event.data.validData === 'true') {
-                console.log('ApplicantDetails: Message received Data', JSON.stringify(event.data.data));
-                console.log('ApplicantDetails: Message received type', JSON.stringify(event.data.type));
-                console.log('ApplicantDetails: Message received source', JSON.stringify(event.data.source));
+                // console.log('ApplicantDetails: Message received Data', JSON.stringify(event.data.data));
+                // console.log('ApplicantDetails: Message received type', JSON.stringify(event.data.type));
+                // console.log('ApplicantDetails: Message received source', JSON.stringify(event.data.source));
                 if (event.data.data) {
-                    console.log('Data from chatbot:', JSON.parse(JSON.stringify(event.data.data)));
+                    // console.log('Data from chatbot:', JSON.parse(JSON.stringify(event.data.data)));
                     this.dataFromChatbot = JSON.parse(JSON.stringify(event.data.data));
-                    console.log("Data from chatbot ===> ", this.dataFromChatbot);
+                    // console.log("Data from chatbot ===> ", this.dataFromChatbot);
                     this.updateFormValues();
                 }
             }
@@ -340,6 +344,7 @@ export default class ApplicantDetails extends LightningElement {
         }
     }
 
+    // Added by Chirag
     updateFormValues() {
         if (!Array.isArray(this.dataFromChatbot) || !this.dataFromChatbot.length) {
             return;
@@ -351,7 +356,7 @@ export default class ApplicantDetails extends LightningElement {
             }
 
             const applicant = this.applicants[index];
-            console.log("Applicant Details: ", JSON.parse(JSON.stringify(applicant)));
+            // console.log("Applicant Details: ", JSON.parse(JSON.stringify(applicant)));
 
             const flattenedData = {
                 ...(payload.generalDetails || {}),
@@ -362,7 +367,7 @@ export default class ApplicantDetails extends LightningElement {
                 ...(payload.permanentAddress || {})
             };
 
-            console.log('Flattened Data from Chatbot:', JSON.stringify(flattenedData));
+            // console.log('Flattened Data from Chatbot:', JSON.stringify(flattenedData));
 
             const addressFields = ["corrAddress", "corrCity", "corrState", "corrPincode", "corrCountry", "sameAsPermanent", "permAddress", "permCity", "permState", "permPincode", "permCountry"];
 
@@ -384,7 +389,7 @@ export default class ApplicantDetails extends LightningElement {
         this.applicants = [...this.applicants];
         this.addressData = { ...this.addressData };
 
-        console.log("Updated applicants : ", JSON.parse(JSON.stringify(this.applicants)));
+        // console.log("Updated applicants : ", JSON.parse(JSON.stringify(this.applicants)));
     }
 
     getEmail(bookingId) {

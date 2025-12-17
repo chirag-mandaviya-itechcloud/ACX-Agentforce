@@ -95,23 +95,21 @@ export default class CustomTextMessageBubble extends LightningElement {
     connectedCallback() {
         this.chatBotMessageVisible = false;
         this.strMessage = this.textContent;
-        console.log('chatBot : strMessage', this.strMessage);
-        console.log('chatBot : strMessage', this.strMessage[1]);
-        console.log('chatBot : sender : ', this.sender);
-        console.log('chatBot : sender : ', typeof this.sender);
+        // console.log('chatBot : strMessage', this.strMessage);
+        // console.log('chatBot : sender : ', this.sender);
 
         let jsonObj;
 
         if (this.sender === "Chatbot" && this.strMessage.includes('```json')) {
-            console.log('chatBot : Processing Chatbot message for applicant data.');
+            // console.log('chatBot : Processing Chatbot message for applicant data.');
             try {
                 jsonObj = JSON.parse(this.strMessage.replace(/```json|```/g, '').trim());
             } catch (e) {
                 console.error('chatBot : Error parsing JSON:', e);
                 jsonObj = {};
             };
-            console.log('chatBot : Original Message String : ', jsonObj);
-            console.log('chatBot : Parsed JSON Object : ', JSON.stringify(jsonObj));
+            // console.log('chatBot : Original Message String : ', jsonObj);
+            // console.log('chatBot : Parsed JSON Object : ', JSON.stringify(jsonObj));
             this.publishApplicantData(jsonObj, 'true');
             this.chatBotMessageVisible = true;
             this.chatBotMessage = 'Updating applicant data...';
@@ -123,7 +121,7 @@ export default class CustomTextMessageBubble extends LightningElement {
      * Format: "key1=value1,key2=value2"
      */
     parseKeyValuePairs(dataString) {
-        console.log('chatBot : Parsing data string:', dataString);
+        // console.log('chatBot : Parsing data string:', dataString);
         const data = {};
         const pairs = dataString.split(',');
 
@@ -134,7 +132,7 @@ export default class CustomTextMessageBubble extends LightningElement {
             }
         });
 
-        console.log('chatBot : Parsed data:', JSON.stringify(data));
+        // console.log('chatBot : Parsed data:', JSON.stringify(data));
         return data;
 
     }
