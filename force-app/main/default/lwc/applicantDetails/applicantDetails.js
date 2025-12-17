@@ -368,15 +368,11 @@ export default class ApplicantDetails extends LightningElement {
 
             Object.keys(flattenedData).forEach(key => {
                 if (addressFields.includes(key)) {
-                    if (key.toLowerCase().includes('state')) {
-                        this.addressData[key] = this.stateOptions.find(option => option.label === flattenedData[key])?.value || '';
-                    } else if (key.toLowerCase().includes('country')) {
+                    if (key.toLowerCase().includes('country')) {
                         this.addressData[key] = this.countryOptions.find(option => option.label === flattenedData[key])?.value || '';
                     } else {
                         this.addressData[key] = flattenedData[key];
                     }
-                } if (key.toLowerCase().includes('state')) {
-                    applicant['state'] = this.stateOptions.find(option => option.label === flattenedData[key])?.value || '';
                 } else if (key.toLowerCase().includes('country')) {
                     applicant['country'] = this.countryOptions.find(option => option.label === flattenedData[key])?.value || '';
                 } else {
